@@ -36,10 +36,9 @@ sudo echo 198 > /sys/class/gpio/export
 sudo echo out > /sys/class/gpio/gpio198/direction
 sudo echo 0 > /sys/class/gpio/gpio198/value
 sleep 2s
-#读取时钟模块的时间到系统时间
-sudo hwclock --rtc /dev/rtc1 --hctosys --localtime
-hwclock -w -f /dev/rtc1
 DIR=$(cd $(dirname $0) && pwd)
+#尝试同步互联网时间
+bash $DIR/synctime.sh
 #启动php
 start_php
 sleep 2s
@@ -47,14 +46,16 @@ sleep 2s
 nowtime=$(date '+%H:%M')
 #读取当天的打铃时间表
 loadDB $DIR/bells.db
+#读取当天的系统日期
+nowdate=$(date '+%Y-%m-%d')
 while true
 do
 	nowtime=$(date '+%H:%M')
 	read -t 1 READ_PIPE<$DIR/ring.pipe
-	if [[ "$nowtime" == "00:00" ]]; then
+	if [[ "$nowdate" != $(date '+%Y-%m-%d') ]]; then
 		echo $(date '+%Y/%m/%d %H:%M:%S')" 新的一天开始，加载新的一天打铃表..."
 		loadDB $DIR/bells.db
-		sleep 1m
+		nowdate=$(date '+%Y-%m-%d')
 	fi
 	if [[ " ${ring_table[*]} " =~ "$nowtime" ]]; then
 		echo $(date '+%Y/%m/%d %H:%M:%S')" 时间到，打铃！"
