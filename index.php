@@ -141,7 +141,7 @@ function loadcontent($content,$function){
 	<html>
 	<head>
 		<title>校园电铃系统</title>
-	    <script src='jquery.min.js'></script>
+	    <script src='zepto.min.js'></script>
 		<style>
 		body{
 			font-family:sans-serif;
@@ -200,7 +200,7 @@ function loadcontent($content,$function){
 	$content
 	</div>
 	<script>
-	    $('#left a[href$=$function]').css('font-weight','bold');
+	    document.getElementById('left').querySelector('[href=\"./?f=$function\"]').style.fontWeight = 'bold';
 	</script>
 	</body>
 	</html>";
