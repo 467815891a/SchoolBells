@@ -4,9 +4,8 @@ loadDB(){
 }
 
 ring_now(){
-	echo $(date '+%Y/%m/%d %H:%M:%S')" Ring now!"
 	sudo echo 1 > /sys/class/gpio/gpio198/value
-	sleep 10s
+	sleep 20s
 	sudo echo 0 > /sys/class/gpio/gpio198/value
 }
 
@@ -20,7 +19,7 @@ mk_pipe(){
 }
 
 start_php(){
-	PIDS=$(ps aux |grep php |grep -v grep | awk '{print $2}')
+	PIDS=$(ps aux |grep 'php -S'  |grep -v grep | awk '{print $2}')
 	if [ "$PIDS" != "" ]; then
 		kill $PIDS
 	fi
@@ -28,6 +27,13 @@ start_php(){
 	cd $DIR && nohup php -S 0.0.0.0:80 > /dev/null 2>&1 &
 }
 
+check_php(){
+	PIDS=$(ps aux |grep 'php -S'  |grep -v grep | awk '{print $2}')
+	if [ "$PIDS" == "" ]; then
+		echo $(date '+%Y/%m/%d %H:%M:%S')" 发现php进程意外退出，尝试重启..."
+		cd $DIR && nohup php -S 0.0.0.0:80 > /dev/null 2>&1 &
+	fi
+}
 
 #加载DS3231时间模块
 sudo echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-0/new_device
@@ -37,6 +43,7 @@ sudo echo out > /sys/class/gpio/gpio198/direction
 sudo echo 0 > /sys/class/gpio/gpio198/value
 sleep 2s
 DIR=$(cd $(dirname $0) && pwd)
+echo $(date '+%Y/%m/%d %H:%M:%S')" 打铃系统启动，工作前尝试同步互联网时间..."
 #尝试同步互联网时间
 bash $DIR/synctime.sh
 #启动php
@@ -58,7 +65,7 @@ do
 		nowdate=$(date '+%Y-%m-%d')
 	fi
 	if [[ " ${ring_table[*]} " =~ "$nowtime" ]]; then
-		echo $(date '+%Y/%m/%d %H:%M:%S')" 时间到，打铃！"
+		echo $(date '+%Y/%m/%d %H:%M:%S')" 时间到，自动打铃！"
 		ring_now
 		sleep 1m
 	fi
@@ -66,12 +73,12 @@ do
 		echo $(date '+%Y/%m/%d %H:%M:%S')" 收到打铃表可能更新，加载新的打铃表..."
 		loadDB $DIR/bells.db
 		echo 0 > $DIR/ring.pipe
-		#echo ${ring_table[@]} | xargs -n 1 | sed "=" | sed "N;s/\n/. /"
 	fi
 	if [[ $READ_PIPE = 'ring_now' ]]; then
-		echo $(date '+%Y/%m/%d %H:%M:%S')" 收到立即打铃指令，现在打铃..."
+		echo $(date '+%Y/%m/%d %H:%M:%S')" 收到手动打铃指令，现在打铃..."
 		ring_now
 		echo 0 > $DIR/ring.pipe
 	fi
-
+	check_php
+	sleep 1s
 done
