@@ -400,16 +400,16 @@ if($function=='main'){
     <table id=weeklyschedule>
     <thead>
         <tr>
-            <th>名称
-            <th>时刻
-            <th>一
-            <th>二
-            <th>三
-            <th>四
-            <th>五
-            <th>六
-            <th>日
-            <th>删除
+            <th><p>名称</p></th>
+            <th><p>时刻</p></th>
+            <th><input type='checkbox' id='mon_allcheck' onchange='allcheck_mon()'><p style='display:inline-block;'> 一</p></th>
+            <th><input type='checkbox' id='tue_allcheck' onchange='allcheck_tue()'><p style='display:inline-block;'> 二</p></th>
+            <th><input type='checkbox' id='wed_allcheck' onchange='allcheck_wed()'><p style='display:inline-block;'> 三</p></th>
+            <th><input type='checkbox' id='thu_allcheck' onchange='allcheck_thu()'><p style='display:inline-block;'> 四</p></th>
+            <th><input type='checkbox' id='fri_allcheck' onchange='allcheck_fri()'><p style='display:inline-block;'> 五</p></th>
+            <th><input type='checkbox' id='sat_allcheck' onchange='allcheck_sat()'><p style='display:inline-block;'> 六</p></th>
+            <th><input type='checkbox' id='sun_allcheck' onchange='allcheck_sun()'><p style='display:inline-block;'> 日</p></th>
+            <th><p>删除</p></th>
     </thead>
     <tbody>";
     
@@ -458,6 +458,48 @@ if($function=='main'){
     	}
         function addrow(){
             $('#weeklyschedule tbody').append('<tr><td><input name=description><td><input type=time name=time><td><input type=checkbox name=mon><td><input type=checkbox name=tue><td><input type=checkbox name=wed><td><input type=checkbox name=thu><td><input type=checkbox name=fri><td><input type=checkbox name=sat><td><input type=checkbox name=sun><td><button onclick=\"removerow(this)\">删除</button>');
+        }
+        function allcheck_mon(){
+            var checkboxes = document.querySelectorAll('input[name=\"mon\"]');
+            var flag = document.getElementById('mon_allcheck').checked;
+            for (var i = 0; i < checkboxes.length; i++)
+    			checkboxes[i].checked = flag;
+        }
+        function allcheck_tue(){
+            var checkboxes = document.querySelectorAll('input[name=\"tue\"]');
+            var flag = document.getElementById('tue_allcheck').checked;
+            for (var i = 0; i < checkboxes.length; i++)
+    			checkboxes[i].checked = flag;
+        }
+        function allcheck_wed(){
+            var checkboxes = document.querySelectorAll('input[name=\"wed\"]');
+            var flag = document.getElementById('wed_allcheck').checked;
+            for (var i = 0; i < checkboxes.length; i++)
+    			checkboxes[i].checked = flag;
+        }
+        function allcheck_thu(){
+            var checkboxes = document.querySelectorAll('input[name=\"thu\"]');
+            var flag = document.getElementById('thu_allcheck').checked;
+            for (var i = 0; i < checkboxes.length; i++)
+    			checkboxes[i].checked = flag;
+        }
+        function allcheck_fri(){
+            var checkboxes = document.querySelectorAll('input[name=\"fri\"]');
+            var flag = document.getElementById('fri_allcheck').checked;
+            for (var i = 0; i < checkboxes.length; i++)
+    			checkboxes[i].checked = flag;
+        }
+        function allcheck_sat(){
+            var checkboxes = document.querySelectorAll('input[name=\"sat\"]');
+            var flag = document.getElementById('sat_allcheck').checked;
+            for (var i = 0; i < checkboxes.length; i++)
+    			checkboxes[i].checked = flag;
+        }
+        function allcheck_sun(){
+            var checkboxes = document.querySelectorAll('input[name=\"sun\"]');
+            var flag = document.getElementById('sun_allcheck').checked;
+            for (var i = 0; i < checkboxes.length; i++)
+    			checkboxes[i].checked = flag;
         }
         function save(){
         	tosave = [];
