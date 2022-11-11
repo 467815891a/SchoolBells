@@ -1,5 +1,10 @@
 <?php
-
+if( !headers_sent() && extension_loaded("zlib") && strstr($_SERVER["HTTP_ACCEPT_ENCODING"],"gzip")) 
+{
+  ini_set('zlib.output_compression', 'On');
+  ini_set('zlib.output_compression_level', '5');
+  ini_set('date.timezone','Asia/Shanghai');
+}
 session_start();
 header("Content-Type:text/html;charset=utf-8");
 date_default_timezone_set('Asia/Shanghai');
@@ -141,7 +146,9 @@ function loadcontent($content,$function){
 	<html>
 	<head>
 		<title>校园电铃系统</title>
-	    <script src='zepto.min.js'></script>
+		<script type='text/javascript'>
+	    	".file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR.'zepto.min.js','r')."
+		</script>
 		<style>
 		body{
 			font-family:sans-serif;
