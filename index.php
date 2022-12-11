@@ -36,7 +36,7 @@ if (isset($_POST['user'])){
 
 $db = new PDO("sqlite:./bells.db");
 $db->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-$schedule_names=array('schedule_summer','schedule_winnter','schedule_a','schedule_b');
+$schedule_names=array('schedule_spring','schedule_summer','schedule_autumn','schedule_winnter','schedule_a','schedule_b');
 foreach ($schedule_names as $val){
 	$db->exec("CREATE TABLE IF NOT EXISTS $val (
 	    description TEXT,
@@ -394,12 +394,14 @@ if($function=='main'){
 	$db->exec("DROP TABLE IF EXISTS bells");
 	popen('nohup $(sleep 3;/sbin/reboot) &',"r");
 } else if($function=='week'){
-	$schedule_name=isset($_GET['schedule_name'])?$_GET['schedule_name']:"schedule_summer";
+	$schedule_name=isset($_GET['schedule_name'])?$_GET['schedule_name']:"schedule_a";
     $content = "<h2>打铃方案</h2><br>
     <form method=get action='./' id=changescheduleform>
 	<input type=hidden name=f value=week>
-	<select name='schedule_name' onchange='changeschedule()'>
+	<select style='color:red' name='schedule_name' onchange='changeschedule()'>
+      <option value='schedule_spring' ".($schedule_name == "schedule_spring" ? "selected=''" : "").">春季作息</option>
       <option value='schedule_summer' ".($schedule_name == "schedule_summer" ? "selected=''" : "").">夏季作息</option>
+      <option value='schedule_autumn' ".($schedule_name == "schedule_autumn" ? "selected=''" : "").">秋季作息</option>
       <option value='schedule_winnter' ".($schedule_name == "schedule_winnter" ? "selected=''" : "").">冬季作息</option>
       <option value='schedule_a' ".($schedule_name == "schedule_a" ? "selected=''" : "").">备用方案A</option>
       <option value='schedule_b' ".($schedule_name == "schedule_b" ? "selected=''" : "").">备用方案B</option>
@@ -409,13 +411,13 @@ if($function=='main'){
         <tr>
             <th><p>名称</p></th>
             <th><p>时刻</p></th>
-            <th><input type='checkbox' id='mon_allcheck' onchange='allcheck_mon()'><p style='display:inline-block;'> 一</p></th>
-            <th><input type='checkbox' id='tue_allcheck' onchange='allcheck_tue()'><p style='display:inline-block;'> 二</p></th>
-            <th><input type='checkbox' id='wed_allcheck' onchange='allcheck_wed()'><p style='display:inline-block;'> 三</p></th>
-            <th><input type='checkbox' id='thu_allcheck' onchange='allcheck_thu()'><p style='display:inline-block;'> 四</p></th>
-            <th><input type='checkbox' id='fri_allcheck' onchange='allcheck_fri()'><p style='display:inline-block;'> 五</p></th>
-            <th><input type='checkbox' id='sat_allcheck' onchange='allcheck_sat()'><p style='display:inline-block;'> 六</p></th>
-            <th><input type='checkbox' id='sun_allcheck' onchange='allcheck_sun()'><p style='display:inline-block;'> 日</p></th>
+            <th><input type='checkbox' id='mon_allcheck' onchange='allcheck(this)'><p style='display:inline-block;'> 一</p></th>
+            <th><input type='checkbox' id='tue_allcheck' onchange='allcheck(this)'><p style='display:inline-block;'> 二</p></th>
+            <th><input type='checkbox' id='wed_allcheck' onchange='allcheck(this)'><p style='display:inline-block;'> 三</p></th>
+            <th><input type='checkbox' id='thu_allcheck' onchange='allcheck(this)'><p style='display:inline-block;'> 四</p></th>
+            <th><input type='checkbox' id='fri_allcheck' onchange='allcheck(this)'><p style='display:inline-block;'> 五</p></th>
+            <th><input type='checkbox' id='sat_allcheck' onchange='allcheck(this)'><p style='display:inline-block;'> 六</p></th>
+            <th><input type='checkbox' id='sun_allcheck' onchange='allcheck(this)'><p style='display:inline-block;'> 日</p></th>
             <th><p>删除</p></th>
     </thead>
     <tbody>";
@@ -466,45 +468,10 @@ if($function=='main'){
         function addrow(){
             $('#weeklyschedule tbody').append('<tr><td><input name=description><td><input type=time name=time><td><input type=checkbox name=mon><td><input type=checkbox name=tue><td><input type=checkbox name=wed><td><input type=checkbox name=thu><td><input type=checkbox name=fri><td><input type=checkbox name=sat><td><input type=checkbox name=sun><td><button onclick=\"removerow(this)\">删除</button>');
         }
-        function allcheck_mon(){
-            var checkboxes = document.querySelectorAll('input[name=\"mon\"]');
-            var flag = document.getElementById('mon_allcheck').checked;
-            for (var i = 0; i < checkboxes.length; i++)
-    			checkboxes[i].checked = flag;
-        }
-        function allcheck_tue(){
-            var checkboxes = document.querySelectorAll('input[name=\"tue\"]');
-            var flag = document.getElementById('tue_allcheck').checked;
-            for (var i = 0; i < checkboxes.length; i++)
-    			checkboxes[i].checked = flag;
-        }
-        function allcheck_wed(){
-            var checkboxes = document.querySelectorAll('input[name=\"wed\"]');
-            var flag = document.getElementById('wed_allcheck').checked;
-            for (var i = 0; i < checkboxes.length; i++)
-    			checkboxes[i].checked = flag;
-        }
-        function allcheck_thu(){
-            var checkboxes = document.querySelectorAll('input[name=\"thu\"]');
-            var flag = document.getElementById('thu_allcheck').checked;
-            for (var i = 0; i < checkboxes.length; i++)
-    			checkboxes[i].checked = flag;
-        }
-        function allcheck_fri(){
-            var checkboxes = document.querySelectorAll('input[name=\"fri\"]');
-            var flag = document.getElementById('fri_allcheck').checked;
-            for (var i = 0; i < checkboxes.length; i++)
-    			checkboxes[i].checked = flag;
-        }
-        function allcheck_sat(){
-            var checkboxes = document.querySelectorAll('input[name=\"sat\"]');
-            var flag = document.getElementById('sat_allcheck').checked;
-            for (var i = 0; i < checkboxes.length; i++)
-    			checkboxes[i].checked = flag;
-        }
-        function allcheck_sun(){
-            var checkboxes = document.querySelectorAll('input[name=\"sun\"]');
-            var flag = document.getElementById('sun_allcheck').checked;
+        function allcheck(x){
+        	var y = x.id.substring(0,3);
+            var checkboxes = document.querySelectorAll('input[name='+y+']');
+            var flag = x.checked;
             for (var i = 0; i < checkboxes.length; i++)
     			checkboxes[i].checked = flag;
         }
@@ -550,7 +517,6 @@ if($function=='main'){
     	$sun = $db->quote($d['sun']);
     	$db->exec("INSERT INTO $schedule_name VALUES ($description,$time,$mon,$tue,$wed,$thu,$fri,$sat,$sun)");
     }
-    echo "Saved";
     header('location: ./?f=week&schedule_name='.$schedule_name);
 } else if($function=='saveday'){
 	$date = $_POST['date'];
@@ -563,9 +529,9 @@ if($function=='main'){
     	$db->exec("INSERT INTO bells VALUES ($description,$dateq,$time)");
     }
     file_put_contents(dirname(__FILE__).DIRECTORY_SEPARATOR."ring.pipe", "update_table".PHP_EOL);
-    echo "Saved";
     header("location: ./?f=main&date=$date");
 } else if($function=='applytodates'){
+	loadcontent("正在添加打铃计划，请保持窗口不要关闭...",'week');
 	$schedule_name = $_POST['schedule_name'];
 	$firstdate = $_POST['firstdate'];
 	$lastdate = $_POST['lastdate'];
@@ -573,7 +539,7 @@ if($function=='main'){
 	$lastdateq = $db->quote($_POST['lastdate']);
 	$diff_seconds=date_diff(date_create($firstdate),date_create($lastdate));
 	$diff_days=$diff_seconds->format("%R%a");
-	if ($diff_days>0&&$diff_days<366){
+	if ($diff_days>=0&&$diff_days<366){
 		$db->exec("DELETE FROM bells WHERE date>=$firstdateq AND date<=$lastdateq");
 		$bells = $db->query("SELECT * FROM $schedule_name ORDER BY time ASC")->fetchAll(PDO::FETCH_ASSOC);
 		$date = strtotime($firstdate);
@@ -594,10 +560,9 @@ if($function=='main'){
 			$i++;
 		}
 	    file_put_contents(dirname(__FILE__).DIRECTORY_SEPARATOR."ring.pipe", "update_table".PHP_EOL);
-	    echo "Saved";
-	    loadcontent("共成功添加".$i."天的打铃计划",'week');
+	    loadcontent("<br>共成功添加".$i."天的打铃计划",'week');
     } else {
-    	loadcontent("开始日期和结束日期间隔要大于1天，小于1年！",'week');
+    	loadcontent("<br>开始日期不能晚于结束日期，且间隔要小于1年！",'week');
     }
 } else if($function=='ring'){
 	$content = "
